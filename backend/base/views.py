@@ -49,7 +49,7 @@ def conversation(request):
         user_message = request.data.get('message')
         
         if not user_message:
-            return Response({'reply': 'No message received.'})
+            return Response({'reply': 'No message received".'})
 
         response = model.generate_content(user_message)
         return Response({'reply': response.text})
