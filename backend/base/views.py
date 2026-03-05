@@ -9,8 +9,20 @@ import google.generativeai as genai
 
 genai.configure(api_key="AIzaSyDYHmFttOctqnTU9HEvijS8SJKhR1uDZms")
 
+@api_view(['GET'])
+def getRoutes(request): 
+    routes = [
+        {
+            'Endpoint': '/chat/',
+            'method': 'POST',
+            'body': {'message': ""},
+            'description': 'Generates a response based on the user message using Gemini-2.5-Flash model.'
+        },
+    ]
+    return Response(routes)
+
 @api_view(['POST'])
-def gemini(request):
+def chat_view(request):
     try:
         model = genai.GenerativeModel('models/gemini-2.5-flash')
         
@@ -25,3 +37,4 @@ def gemini(request):
     except Exception as e:
         print(f"Error details: {e}")
         return Response({'error': str(e)}, status=500)
+    
