@@ -10,19 +10,39 @@ import google.generativeai as genai
 genai.configure(api_key="AIzaSyDYHmFttOctqnTU9HEvijS8SJKhR1uDZms")
 
 @api_view(['GET'])
-def getRoutes(request): 
+def getRoutes(request):
     routes = [
-        {
-            'Endpoint': '/chat/',
-            'method': 'POST',
-            'body': {'message': ""},
-            'description': 'Generates a response based on the user message using Gemini-2.5-Flash model.'
-        },
+        'api/',
+        'api/signup/',
+        'api/signin/',
+        'api/conversation/',
+        'api/conversations/',
+        'api/conversations/<id>/',
     ]
-    return Response(routes)
+    return Response(routes)  
 
 @api_view(['POST'])
-def chat_view(request):
+def register_view(request):
+    return Response({'message': 'User registration endpoint'})
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    pass
+
+@api_view(['GET'])
+def conversation_list_view(request):
+    return Response(posts)
+
+@api_view(['GET'])
+def conversation_detail_view(request, pk):
+    post = None
+    for i in posts:
+        if i['_id'] == str(pk):
+            post = i
+            break
+    return Response(post)
+
+@api_view(['POST'])
+def conversation(request):
     try:
         model = genai.GenerativeModel('models/gemini-2.5-flash')
         
