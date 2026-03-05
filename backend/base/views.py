@@ -2,12 +2,13 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-
+from .models import *
+from .serializers import *
 import google.generativeai as genai
 
 # Create your views here.
 
-genai.configure(api_key="AIzaSyDYHmFttOctqnTU9HEvijS8SJKhR1uDZms")
+genai.configure(api_key="API_KEY")  
 
 @api_view(['GET'])
 def getRoutes(request):
@@ -25,12 +26,15 @@ def getRoutes(request):
 def register_view(request):
     return Response({'message': 'User registration endpoint'})
 
-class MyTokenObtainPairView(TokenObtainPairView):
-    pass
+@api_view(['POST'])
+def signin_view(request):
+    return Response({'message': 'User login endpoint'})
 
 @api_view(['GET'])
 def conversation_list_view(request):
-    return Response(posts)
+    conversations = Conversation.objects.all()
+    serializer = ConversationSerializer(conversations, many=True)
+    return Response(serializer.data)
 
 @api_view(['GET'])
 def conversation_detail_view(request, pk):
@@ -43,6 +47,16 @@ def conversation_detail_view(request, pk):
 
 @api_view(['POST'])
 def conversation(request):
+    Message.objects.create(
+        conversation_id=request.data.get('conversation_id'),
+        role='user',
+        content=request.data.get('message')
+    )
+    serializer = MessageSerializer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+
     try:
         model = genai.GenerativeModel('models/gemini-2.5-flash')
         
